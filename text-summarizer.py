@@ -68,6 +68,14 @@ def generate_summary(file_name, top_n=5):
 	# Step 1 - Read text anc split it
 	sentences =  read_article(file_name)
 
+	# indexing unranked
+	dict_of_unranked_sentences = {}
+	keys = range(len(sentences))
+	# values = ["Hi", "I", "am", "John"]
+	for i in keys:
+		dict_of_unranked_sentences[i] = sentences[i]
+	# print(dict_of_unranked_sentences)
+
 	# Step 2 - Generate Similary Martix across sentences
 	sentence_similarity_martix = build_similarity_matrix(sentences, stop_words)
 
@@ -80,13 +88,13 @@ def generate_summary(file_name, top_n=5):
 	# print("Indexes of top ranked_sentence order are ", ranked_sentence)  
 
 
-
-	dicts = {}
+	# indexing ranked
+	dict_of_ranked_sentences = {}
 	keys = range(top_n)
 	# values = ["Hi", "I", "am", "John"]
 	for i in keys:
-		dicts[i] = ranked_sentence[i][1]
-	print(dicts)
+		dict_of_ranked_sentences[i] = ranked_sentence[i][1]
+	# print(dict_of_ranked_sentences)
 
 	for i in range(top_n):
 		# print("Sentence rank ",i,":",ranked_sentence[i][1])
