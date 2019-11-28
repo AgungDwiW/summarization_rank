@@ -6,18 +6,30 @@ from nltk.cluster.util import cosine_distance
 import numpy as np
 import networkx as nx
  
-def read_article(file_name):
-    file = open(file_name, "r")
-    filedata = file.readlines()
+from os import listdir
+from os.path import isfile, join
+
+def crawlFolder(path):
+    path ="dataset/plot/"
+    files = [f for f in listdir(path) if isfile(join(path, f))]
+    files.sort()
+    dataset = []
+    for item in files:
+        file_name = join(path, item)
+        file = open(file_name, "r")
+        data = file.read()
+        file.close()
+        dataset.append([data, file_name])
+    return dataset
+
+def read_article(file):
     article = []
-    for data in filedata:
+    for data in file:
         article.append(data.split(". "))
     sentences = []
-
     for paragraph in article:
         for sentence in paragraph:
             sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))
-            
     return sentences
 
 def sentence_similarity(sent1, sent2, stopwords=None):
@@ -59,13 +71,13 @@ def build_similarity_matrix(sentences, stop_words):
     return similarity_matrix
 
 
-def generate_summary(file_name, top_n=5):
+def generate_summary(data, top_n=5):
     nltk.download("stopwords")
     stop_words = stopwords.words('english')
     summarize_text = []
 
     # Step 1 - Read text anc split it
-    sentences =  read_article(file_name)
+    sentences =  read_article(data)
 
     # indexing unranked
     dict_of_unranked_sentences = {}
@@ -95,7 +107,10 @@ def generate_summary(file_name, top_n=5):
         summarize_text.append(" ".join(ranked_sentence[i][1]))
 
     # Step 5 - Offcourse, output the summarize texr
-    print("Summarize Text: \n", ". ".join(summarize_text))
-   
+    return summarize_text
+
+
+plot = crawlFolder("dataset/plot")
+synopsis = crawlFolder ("dataset/synopsis")
 # let's begin
 generate_summary( "dataset/titanic.txt", 10)
