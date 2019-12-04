@@ -9,6 +9,9 @@ import networkx as nx
 from os import listdir
 from os.path import isfile, join
 
+nltk.download("stopwords")
+stop_words = stopwords.words('english')
+
 def crawlFolder(path):
     path ="dataset/plot/"
     files = [f for f in listdir(path) if isfile(join(path, f))]
@@ -23,13 +26,13 @@ def crawlFolder(path):
     return dataset
 
 def read_article(file):
-    article = []
-    for data in file:
-        article.append(data.split(". "))
+    article = file[0].split(". ")
     sentences = []
-    for paragraph in article:
-        for sentence in paragraph:
-            sentences.append(sentence.replace("[^a-zA-Z]", " ").split(" "))
+    for sentence in article:
+        if len(sentence) <2 :
+            continue
+        sentences.append(nltk.tokenize.word_tokenize(sentence))
+        
     return sentences
 
 def sentence_similarity(sent1, sent2, stopwords=None):
@@ -72,12 +75,14 @@ def build_similarity_matrix(sentences, stop_words):
 
 
 def generate_summary(data, top_n=5):
-    nltk.download("stopwords")
-    stop_words = stopwords.words('english')
+    
     summarize_text = []
 
     # Step 1 - Read text anc split it
     sentences =  read_article(data)
+    for item in sentences:
+        if len(item)<3:
+            sentences.remove(item)
 
     # indexing unranked
     dict_of_unranked_sentences = {}
@@ -101,10 +106,11 @@ def generate_summary(data, top_n=5):
     
     ranked_sentence.sort(key = lambda x: x[0], reverse=True)
     summary = ranked_sentence[0:top_n]
+    summary.sort(key = lambda x: x[2])
     summary = [i[1] for i in summary]
+    summarize_text = ""
     for i in range(top_n):
-        # print("Sentence rank ",i,":",ranked_sentence[i][1])
-        summarize_text.append(" ".join(ranked_sentence[i][1]))
+        summarize_text+=" ".join(summary[i]) + ". "
 
     # Step 5 - Offcourse, output the summarize texr
     return summarize_text
@@ -113,4 +119,29 @@ def generate_summary(data, top_n=5):
 plot = crawlFolder("dataset/plot")
 synopsis = crawlFolder ("dataset/synopsis")
 # let's begin
-generate_summary( "dataset/titanic.txt", 10)
+a = 0
+summary = []
+for item in plot:
+    print("generating summary for document "+ plot[a][1])
+    a+=1
+    suma = generate_summary(item)
+    summary.append(suma)
+
+score = []
+
+#do this python -m spacy download en
+import spacy
+nlp = spacy.load('en')
+for i in range(len(plot)):
+    doc1 = nlp(summary[i])
+    doc2 = nlp(synopsis[i][0])
+    score.append(doc1.similarity(doc2))
+
+print("=========================================================")
+
+for i in range(len(score)):
+    print ("score for document "+ plot[i][1] + " is : " + str(score[i]))
+
+print("=========================================================")
+
+print("overall distance to generated summary with manual created summary :" + str(sum(score)/len(score)))
