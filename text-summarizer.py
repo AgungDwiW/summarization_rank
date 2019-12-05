@@ -145,3 +145,15 @@ for i in range(len(score)):
 print("=========================================================")
 
 print("overall distance to generated summary with manual created summary :" + str(sum(score)/len(score)))
+
+def printDocument(document, filename):
+    filename = filename[1]
+    filename = filename.split("/")
+    filename = filename[-1]
+    filename = join("output", filename)
+    fp = open(filename, "w")
+    fp.write(document)
+    fp.close()
+
+for i in range (len (summary)):
+    printDocument(summary[i], plot[i])
