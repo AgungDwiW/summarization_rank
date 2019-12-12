@@ -13,6 +13,10 @@ nltk.download("stopwords")
 stop_words = stopwords.words('english')
 
 def crawlFolder(path):
+    """
+    crawling to the depth of dungeon called your disk to find the ultimate loot of dataset!
+    return list which contain the information of dataset, [content of dataset, path to dataset]
+    """
     path ="dataset/plot/"
     files = [f for f in listdir(path) if isfile(join(path, f))]
     files.sort()
@@ -26,6 +30,10 @@ def crawlFolder(path):
     return dataset
 
 def read_article(file):
+    """
+    read an article that found at the dungeon (file) and dismantle it for better processing (tokenized sentence)
+    return tokenized file
+    """
     article = file[0].split(". ")
     sentences = []
     for sentence in article:
@@ -36,6 +44,10 @@ def read_article(file):
     return sentences
 
 def sentence_similarity(sent1, sent2, stopwords=None):
+    """
+    calculate the similarity between parts of the loot (sentence)!
+    return distance between loot
+    """
     if stopwords is None:
         stopwords = []
  
@@ -62,6 +74,10 @@ def sentence_similarity(sent1, sent2, stopwords=None):
     return 1 - cosine_distance(vector1, vector2)
  
 def build_similarity_matrix(sentences, stop_words):
+    """
+    make a matrix to plot the similarity between dismantled loot (sentences in a file)
+    return matrix
+    """
     # Create an empty similarity matrix
     similarity_matrix = np.zeros((len(sentences), len(sentences)))
  
@@ -75,6 +91,10 @@ def build_similarity_matrix(sentences, stop_words):
 
 
 def generate_summary(data, top_n=5):
+    """
+    identify a loot that found at dungeon (file)
+    return summarized text
+    """
     
     summarize_text = []
 
@@ -115,10 +135,17 @@ def generate_summary(data, top_n=5):
     # Step 5 - Offcourse, output the summarize texr
     return summarize_text
 
+"""
+crawling the dungeon
+"""
 
 plot = crawlFolder("dataset/plot")
 synopsis = crawlFolder ("dataset/synopsis")
 # let's begin
+
+"""
+indentifying the loot
+"""
 a = 0
 summary = []
 for item in plot:
@@ -126,6 +153,10 @@ for item in plot:
     a+=1
     suma = generate_summary(item)
     summary.append(suma)
+
+"""
+determines the loot's value
+"""
 
 score = []
 
@@ -136,6 +167,10 @@ for i in range(len(plot)):
     doc1 = nlp(summary[i])
     doc2 = nlp(synopsis[i][0])
     score.append(doc1.similarity(doc2))
+
+"""
+make a report of what is found at the dungeon
+"""
 
 print("=========================================================")
 
