@@ -19,6 +19,9 @@ nltk.download("stopwords")
 stop_words = stopwords.words('english')
 
 def read_article(file):
+    """
+    read an article (the plot that provided by user)
+    """
     article = file.split(". ")
     sentences = []
     for sentence in article:
@@ -29,6 +32,9 @@ def read_article(file):
     return sentences
 
 def sentence_similarity(sent1, sent2, stopwords=None):
+    """
+    calculate similarity between two sentence
+    """
     if stopwords is None:
         stopwords = []
  
@@ -55,6 +61,9 @@ def sentence_similarity(sent1, sent2, stopwords=None):
     return 1 - cosine_distance(vector1, vector2)
  
 def build_similarity_matrix(sentences, stop_words):
+    """
+    build a matrix that map the similarity of the sentence in a file
+    """
     # Create an empty similarity matrix
     similarity_matrix = np.zeros((len(sentences), len(sentences)))
  
@@ -68,7 +77,9 @@ def build_similarity_matrix(sentences, stop_words):
 
 
 def generate_summary(data, top_n=5):
-    
+    """
+    generating summary
+    """
     summarize_text = []
 
     # Step 1 - Read text anc split it
@@ -111,16 +122,19 @@ def generate_summary(data, top_n=5):
 
 @app.route("/", methods=['GET', 'POST'])
 def aaa():
-     if request.method == 'GET':
-         return render_template("index.html",flag=0, summary = "")
-     else:
-         text = request.form['text']
-         N = request.form['N']
-         N = int(N)
-         print (N)
-         summary = generate_summary(text, N)
+    """
+    serving the web
+    """
+    if request.method == 'GET':
+        return render_template("index.html",flag=0, summary = "")
+    else:
+        text = request.form['text']
+        N = request.form['N']
+        N = int(N)
+        print (N)
+        summary = generate_summary(text, N)
          
-         return render_template("index.html", flag=1, summary = summary, text=text, N=N)
+        return render_template("index.html", flag=1, summary = summary, text=text, N=N)
 
 
 if __name__ == '__main__':
